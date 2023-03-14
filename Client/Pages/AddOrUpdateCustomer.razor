@@ -1,0 +1,57 @@
+﻿@using RafaStore.Shared.Model
+
+
+<MudDialog>
+    <DialogContent>
+        <MudForm Class="p-5" @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudContainer Class="justify-center">
+                <MudTextField T="string"
+                              Required="true"
+                              RequiredError="Nome é obrigatório"
+                              Variant="Variant.Outlined"
+                              Label="Nome"
+                              @bind-Value="@Customer.Name" />
+                <MudTextField T="string"
+                              Required="true"
+                              RequiredError="Cpf/Cnpj é obrigatório"
+                              Variant="Variant.Outlined"
+                              Label="Cpf/Cnpj"
+                              @bind-Value="@Customer.CpfOrCnpj" />
+                <MudTextField T="string"
+                              Required="true"
+                              RequiredError="Endereço é obrigatório"
+                              Variant="Variant.Outlined"
+                              Label="Endereço"
+                              @bind-Value="@Customer.Address" />
+            </MudContainer>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Salvar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+
+@code {
+    bool success;
+    string[] errors;
+    MudForm form;
+
+    [CascadingParameter]
+    public MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public CustomerViewModel Customer { get; set; } = new();
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Submit()
+    {
+        if (errors == null || errors.Length > 0)
+            return;
+
+        MudDialog.Close(DialogResult.Ok<CustomerViewModel>(Customer));
+    }
+}

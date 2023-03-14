@@ -1,0 +1,9 @@
+﻿namespace RafaStore.Shared.ViewModel
+{
+    public class CustomerViewModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string CpfOrCnpj { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+    }
+}

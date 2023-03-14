@@ -1,0 +1,110 @@
+﻿@page "/"
+@inject IAuthService AuthService
+@inject ISnackbar Snackbar
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>Login</PageTitle>
+<MudContainer Style="margin: 0 auto;">
+    <MudContainer Style="display: flex;
+                         flex-direction: column;
+                         place-content: center;
+                         align-items: center;
+                         margin: 100px 0;
+                         width: 100%;">
+        <MudText Typo="Typo.h3"
+                 Style="margin-bottom: 24px;color: #023891;">RafaStore</MudText>
+
+        <EditForm style="margin: 80px 0;
+                 width: 340px;
+                 text-align: center;"
+                  Model="user"
+                  OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+            <MudTextField Required="true"
+                          @bind-Value="user.Email"
+                          T="string"
+                          Label="Email"
+                          Variant="Variant.Outlined"
+                          />
+            <ValidationMessage style="text-align: start;"
+                               For="() => user.Email"
+                               TValue="string" />
+
+            <MudTextField Required="true"
+                          @bind-Value="user.Password"
+                          T="string"
+                          Label="Senha"
+                          InputType="InputType.Password"
+                          Variant="Variant.Outlined"
+                          OnKeyUp="Enter"
+                          KeyUpPreventDefault="@preventKey" />
+            <ValidationMessage style="text-align: start;"
+                               For="() => user.Password"
+                               TValue="string" />
+
+            <MudButton Style="background: #023891;
+                              height: 56px;
+                              border-radius: 10px;
+                              border: 0;
+                              padding: 0 16px;
+                              color: whitesmoke;
+                              width: 100%;
+                              font-weight: 500;
+                              margin-top: 16px;
+                              transition: background-color 0.2s;"
+                       Disabled="@_processing"
+                       ButtonType="ButtonType.Submit">
+                @if(_processing)
+                {
+                    <MudProgressCircular Style="color: whitesmoke;" Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                }
+                else
+                {
+                    <MudText Style="color: whitesmoke;
+                                    font-weight: 500">
+                    Entrar
+                    </MudText>
+                }
+            </MudButton>
+        </EditForm>
+    </MudContainer>
+</MudContainer>
+
+
+@code {
+    private LoginViewModel user = new();
+
+    private bool _processing = false;
+    private bool preventKey = false;
+    private string message = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        _processing = true;
+        var result = await AuthService.Login(user);
+
+        if(result.Success)
+        {
+            await LocalStorage.SetItemAsync("authToken", result.Data);
+            await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            NavigationManager.NavigateTo("customers");
+        }
+        else
+        {
+            Snackbar.Add(result.Message, Severity.Error);
+        }
+
+        _processing = false;
+    }
+
+    private async Task Enter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter")
+        {
+            preventKey = true; 
+            await HandleLogin();
+        }
+    }
+}

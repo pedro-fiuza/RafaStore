@@ -1,0 +1,24 @@
+﻿<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    <MudContainer Style="width: 100%;" Class="d-flex flex-column justify-center align-center">
+                        <MudText Class="py-8 d-flex flex-1" Typo="Typo.h3">Ops! Você não esta autorizado a acessar esta página.</MudText>
+                        <MudText Class="py-8 d-flex flex-1" Typo="Typo.h5">Por favor, faça o login ou cadastre-se.</MudText>
+                        <MudLink Href="/">Login</MudLink>
+                        <MudLink Href="register">Cadastre-se</MudLink>
+                    </MudContainer>
+                </NotAuthorized>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
+

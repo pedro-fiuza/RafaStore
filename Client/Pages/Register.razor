@@ -1,0 +1,80 @@
+﻿@page "/register"
+@inject IAuthService AuthService
+@inject ISnackbar Snackbar
+
+
+<PageTitle>Cadastro</PageTitle>
+<MudContainer Style="margin: 0 auto;">
+    <MudContainer Style="display: flex;
+                         flex-direction: column;
+                         place-content: center;
+                         align-items: center;
+                         margin: 100px 0;
+                         width: 100%;">
+        <MudText Typo="Typo.h3"
+                 Style="margin-bottom: 24px;color: #023891;">Cadastro</MudText>
+
+        <EditForm style="margin: 80px 0;
+                 width: 340px;
+                 text-align: center;"
+                  Model="user"
+                  OnValidSubmit="HandleRegistration">
+            <DataAnnotationsValidator />
+            <MudTextField Required="true"
+                          @bind-Value="user.Email"
+                          T="string"
+                          Label="Email"
+                          Variant="Variant.Outlined" />
+            <ValidationMessage style="text-align: start;"
+                               For="() => user.Email"
+                               TValue="string" />
+
+            <MudTextField Required="true"
+                          @bind-Value="user.Password"
+                          T="string"
+                          Label="Senha"
+                          InputType="InputType.Password"
+                          Variant="Variant.Outlined" />
+            <ValidationMessage style="text-align: start;"
+                               For="() => user.Password"
+                               TValue="string" />
+            <MudTextField Required="true"
+                          @bind-Value="user.ConfirmPassword"
+                          T="string"
+                          Label="Confirme sua senha"
+                          InputType="InputType.Password"
+                          Variant="Variant.Outlined" />
+            <ValidationMessage style="text-align: start;"
+                               For="() => user.ConfirmPassword"
+                               TValue="string" />
+            <MudButton Style="background: #023891;
+                              height: 56px;
+                              border-radius: 10px;
+                              border: 0;
+                              padding: 0 16px;
+                              color: whitesmoke;
+                              width: 100%;
+                              font-weight: 500;
+                              margin-top: 16px;
+                              transition: background-color 0.2s;"
+                       ButtonType="ButtonType.Submit">
+                Cadastrar
+            </MudButton>
+        </EditForm>
+    </MudContainer>
+</MudContainer>
+
+@code {
+
+    private UserRegisterViewModel user = new();
+
+    private string message = string.Empty;
+
+    private async Task HandleRegistration()
+    {
+        var result = await AuthService.Register(user);
+
+        Snackbar.Add(result.Message, result.Success ? Severity.Success: Severity.Error); 
+    }
+
+}

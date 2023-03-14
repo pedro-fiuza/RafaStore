@@ -1,0 +1,235 @@
+﻿@page "/customers"
+@using RafaStore.Shared.Model;
+@inject ICustomerService CustomerService
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService;
+@inject IJSRuntime JS;
+@implements IDisposable
+@attribute [Authorize]
+
+
+<PageTitle>Clientes</PageTitle>
+
+<MudContainer Class="mt-4">
+    <MudItem Class="d-flex justify-end p-0">
+        <MudText Typo="Typo.h5"
+                 Class="mr-auto pt-2" Style="color: #023891;">Clientes</MudText>
+        <MudFab Style="background: #023891; color:#fff; margin-right: 10px;" Size="Size.Medium" StartIcon="@Icons.Material.Outlined.Reorder" OnClick="(() => ReOrder())" />
+        <MudFab Style="background: #023891; color:#fff; margin-right: 10px;" Size="Size.Medium" StartIcon="@Icons.Material.Outlined.Add" OnClick="(() => AddCustomer())" />
+        <MudFab Style="background: #023891; color:#fff;" Size="Size.Medium" StartIcon="@Icons.Material.Outlined.People" OnClick="(() => RedirectRegister())" />
+    </MudItem>
+    <MudContainer Style="margin-top: 40px;
+                     max-width: 700px;
+                     display: flex;
+                     align-items: center;
+                     justify-content: center;">
+        <MudTextField Style="flex: 1;
+                             height: 90px;
+                             padding: 0px;
+                             border: 0;
+                             border-radius: 5px 0 0 5px;
+                             color: #3a3a3a;
+                             border: 2px solid #fff;
+                             border-right: 0;"
+                      T="string"
+                      @bind-Value="@searchText"
+                      OnKeyUp="Enter"
+                      KeyUpPreventDefault="@preventKey"
+                      Variant="Variant.Outlined" />
+        <MudButton Style="width: 160px;
+                          height: 55px;
+                          background: #023891;
+                          border-radius: 0 5px 5px 0;
+                          margin-top: 4px;
+                          margin-left: 0;
+                          border: 0;
+                          color: #fff;
+                          font-weight: bold;
+                          transition: background-color 0.2s;"
+                   OnClick="(() => HandleSearch())">
+            @if (_processing)
+            {
+                <MudProgressCircular Style="color: whitesmoke;" Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                <MudText Style="color: whitesmoke;
+                                    font-weight: bold">
+                    Pesquisar
+                </MudText>
+            }
+        </MudButton>
+    </MudContainer>
+    <MudGrid Justify="Justify.Center" Class="mt-8">
+        @if (CustomerService.Customers is null || CustomerService.Customers?.Count == 0)
+        {
+            <MudText>@CustomerService.Message</MudText>
+        }
+        else
+        {
+            @foreach (var customer in CustomerService.Customers)
+            {
+
+                <MudCard Style="width:100%;" Elevation="25" Class="rounded-lg p-0 mb-2">
+                    <MudLink Underline="Underline.None" Color="Color.Dark">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <strong>@customer.Name</strong>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.Edit" OnClick="() => EditCustomer(customer.Id)" />
+                                <MudIconButton Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.DocumentScanner" OnClick="async ()  => await GeneratePdfDocument(customer)" />
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudDivider />
+                        <MudCardContent Class="p-1">
+                            <MudList Class="mx-auto mt-0 p-0">
+                                <MudListItem Class="mb-0 pb-0 pt-1" Icon="@Icons.Material.Outlined.LocationOn" IconColor="Color.Dark">
+                                    @customer.Address
+                                </MudListItem>
+                                <MudListItem Class="mb-0 pb-0 pt-1" Icon="@Icons.Material.Outlined.Person" IconColor="Color.Dark">
+                                    @customer.CpfOrCnpj
+                                </MudListItem>
+                            </MudList>
+                        </MudCardContent>
+                    </MudLink>
+                </MudCard>
+            }
+        }
+    </MudGrid>
+    <MudContainer Class="d-flex position-relative justify-content-center bottom-0 mb-2 w-100">
+        <MudPagination Class="mt-4"
+                       BoundaryCount="1"
+                       MiddleCount="1"
+                       Color="Color.Dark"
+                       Count="CustomerService.PageCount"
+                       SelectedChanged="HandlePage"
+                       Variant="Variant.Filled" />
+    </MudContainer>
+</MudContainer>
+
+
+
+@code {
+    private string searchText = string.Empty;
+    private bool preventKey = false;
+    private bool _processing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CustomerService.GetAllCustomersPaginated(CustomerService.CurrentPage);
+        CustomerService.CustomersChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        CustomerService.CustomersChanged -= StateHasChanged;
+    }
+
+    private async Task EditCustomer(int? customerId)
+    {
+        var customerToUpdate = CustomerService.Customers.SingleOrDefault(x => x.Id == customerId);
+
+        var parameters = new DialogParameters() { { "customer", new CustomerViewModel()
+        {
+            Name = customerToUpdate.Name,
+            CpfOrCnpj = customerToUpdate.CpfOrCnpj,
+            Address = customerToUpdate.Address,
+        } } };
+
+        var dialog = await DialogService.Show<AddOrUpdateCustomer>("Editar cliente", parameters).Result;
+
+        if (dialog.Data != null)
+        {
+            var customer = dialog.Data as CustomerViewModel;
+
+            customerToUpdate.Name = customer.Name;
+            customerToUpdate.CpfOrCnpj = customer.CpfOrCnpj;
+            customerToUpdate.Address = customer.Address;
+
+            await CustomerService.UpdateCustomer(customerToUpdate);
+
+            await OnInitializedAsync();
+        }
+    }
+
+    private async Task AddCustomer()
+    {
+        var parameters = new DialogParameters() { { "customer", new CustomerViewModel() } };
+
+        var dialog = await DialogService.Show<AddOrUpdateCustomer>("Adicionar cliente", parameters).Result;
+
+        if (dialog.Data != null)
+        {
+            var customer = dialog.Data as CustomerViewModel;
+
+            await CustomerService.CreateCustomer(new RafaStore.Shared.Model.CustomerModel()
+                {
+                    Name = customer.Name,
+                    CpfOrCnpj = customer.CpfOrCnpj,
+                    Address = customer.Address
+                });
+
+            await OnInitializedAsync();
+        }
+    }
+
+    private async Task RedirectRegister()
+    {
+        NavigationManager.NavigateTo("customer");
+    }
+
+    private async void HandlePage(int page)
+    {
+        if (string.IsNullOrEmpty(CustomerService.LastSearchText) && string.IsNullOrEmpty(searchText))
+        {
+            await CustomerService.GetAllCustomersPaginated(page);
+        }
+        else
+        {
+            await CustomerService.SearchCustomers(searchText, page);
+        }
+    }
+
+    private async Task HandleSearch()
+    {
+        _processing = true;
+        await CustomerService.SearchCustomers(searchText, 1);
+        searchText = string.Empty;
+        _processing = false;
+    }
+
+    private async Task Enter(KeyboardEventArgs e)
+    {
+        if(e.Code == "Enter")
+        {
+            preventKey = true;
+            await HandleSearch();
+        }
+    }
+
+    private async Task ReOrder()
+    {
+        await CustomerService.ReOrder();
+    }
+
+    private async Task GeneratePdfDocument(CustomerModel customer)
+    {
+        var parameters = new DialogParameters() { { "note", new NoteViewModel() } };
+
+        var dialog = await DialogService.Show<GenerateNote>("Gerar nota promissória", parameters).Result;
+
+        if (dialog.Data != null)
+        {
+            var note = dialog.Data as NoteViewModel;
+
+            var bytesBase64 = await CustomerService.GeneratePdf(new GeneratePdfViewModel()
+                {
+                    Customer = customer,
+                    Note = note,
+                });
+
+            JS.InvokeVoidAsync("saveAsFile", $"{customer.Name}-nota-promissoria", Convert.ToBase64String(bytesBase64));
+        }
+    }
+}

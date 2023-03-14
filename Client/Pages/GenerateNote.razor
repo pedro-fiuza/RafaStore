@@ -1,0 +1,48 @@
+﻿
+<MudDialog>
+    <DialogContent>
+        <MudForm Class="p-5" @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudContainer Class="justify-center">
+                <MudTextField T="int?"
+                              Required="true"
+                              RequiredError="Numero de parcelas é obrigatório"
+                              Variant="Variant.Outlined"
+                              Label="Numero de parcelas"
+                              @bind-Value="@Note.NumeroDeParcelas" />
+                <MudTextField T="decimal?"
+                              Required="true"
+                              RequiredError="Valor total é obrigatório"
+                              Variant="Variant.Outlined"
+                              Label="Valor total"
+                              @bind-Value="@Note.ValorTotal" />
+            </MudContainer>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Salvar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    bool success;
+    string[] errors;
+    MudForm form;
+
+    [CascadingParameter]
+    public MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public NoteViewModel Note { get; set; } = new();
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Submit()
+    {
+        if (errors == null || errors.Length > 0)
+            return;
+
+        MudDialog.Close(DialogResult.Ok<NoteViewModel>(Note));
+    }
+}
