@@ -58,10 +58,12 @@ namespace RafaStore.Server.Services.HospitalService
             result.Name = customer.Name;
             result.Address = customer.Address;
 
-            if (customer.CpfOrCnpj.Length == 11)
-                result.CpfOrCnpj = HelperCpfOrCnpj.FormatCPF(customer.CpfOrCnpj);
+            var semFormatacao = HelperCpfOrCnpj.SemFormatacao(customer.CpfOrCnpj);
+
+            if (semFormatacao.Length == 11)
+                result.CpfOrCnpj = HelperCpfOrCnpj.FormatCPF(semFormatacao);
             else
-                result.CpfOrCnpj = HelperCpfOrCnpj.FormatCNPJ(customer.CpfOrCnpj);
+                result.CpfOrCnpj = HelperCpfOrCnpj.FormatCNPJ(semFormatacao);
 
             context.Customer.Update(result);
             await context.SaveChangesAsync();

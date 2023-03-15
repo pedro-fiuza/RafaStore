@@ -21,30 +21,25 @@ namespace RafaStore.Server.Data.Map
                 .HasColumnType("varchar")
                 .HasMaxLength(128);
 
-            builder.Property(x => x.Crm)
-                .HasColumnName("Crm")
-                .HasColumnType("varchar")
-                .HasMaxLength(40);
-
             builder.Property(x => x.PasswordSalt)
                 .IsRequired()
                 .HasColumnName("PasswordSalt")
-                .HasColumnType("bytea");
+                .HasColumnType("NVARCHAR");
 
             builder.Property(x => x.PasswordHash)
                 .IsRequired()
                 .HasColumnName("PasswordHash")
-                .HasColumnType("bytea");
+                .HasColumnType("NVARCHAR");
 
             builder.Property(x => x.CreatedAt)
                 .IsRequired()
                 .HasColumnName("CreatedAt")
-                .HasColumnType("timestamp");
+                .HasColumnType("smalldatetime");
 
             builder.Property(x => x.UpdatedAt)
                 .IsRequired()
                 .HasColumnName("UpdatedAt")
-                .HasColumnType("timestamp");
+                .HasColumnType("smalldatetime");
         }
     }
 }

@@ -2,8 +2,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RafaStore.Server.Data;
 
 #nullable disable
@@ -18,40 +18,42 @@ namespace RafaStore.Server.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "6.0.3")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("RafaStore.Shared.Model.CustomerModel", b =>
                 {
                     b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int?>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Address");
 
                     b.Property<string>("CpfOrCnpj")
                         .IsRequired()
                         .HasMaxLength(40)
-                        .HasColumnType("varchar")
+                        .HasColumnType("varchar(40)")
                         .HasColumnName("CpfOrCnpj");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp")
+                        .HasColumnType("smalldatetime")
                         .HasColumnName("CreatedAt");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("Name");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp")
+                        .HasColumnType("smalldatetime")
                         .HasColumnName("UpdatedAt");
 
                     b.HasKey("Id");
@@ -63,38 +65,32 @@ namespace RafaStore.Server.Migrations
                 {
                     b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int?>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp")
+                        .HasColumnType("smalldatetime")
                         .HasColumnName("CreatedAt");
-
-                    b.Property<string>("Crm")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("varchar")
-                        .HasColumnName("Crm");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("varchar")
+                        .HasColumnType("varchar(128)")
                         .HasColumnName("Email");
 
-                    b.Property<byte[]>("PasswordHash")
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("bytea")
+                        .HasColumnType("NVARCHAR")
                         .HasColumnName("PasswordHash");
 
-                    b.Property<byte[]>("PasswordSalt")
+                    b.Property<string>("PasswordSalt")
                         .IsRequired()
-                        .HasColumnType("bytea")
+                        .HasColumnType("NVARCHAR")
                         .HasColumnName("PasswordSalt");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp")
+                        .HasColumnType("smalldatetime")
                         .HasColumnName("UpdatedAt");
 
                     b.HasKey("Id");

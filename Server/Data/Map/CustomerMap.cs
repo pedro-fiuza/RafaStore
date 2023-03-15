@@ -22,19 +22,27 @@ namespace RafaStore.Server.Data.Map
                 .HasMaxLength(255);
 
             builder.Property(x => x.CpfOrCnpj)
+                .IsRequired()
                 .HasColumnName("CpfOrCnpj")
                 .HasColumnType("varchar")
                 .HasMaxLength(40);
 
+            builder.Property(x => x.Address)
+                .IsRequired()
+                .HasColumnName("Address")
+                .HasColumnType("nvarchar")
+                .HasMaxLength(255);
+
             builder.Property(x => x.CreatedAt)
                 .IsRequired()
                 .HasColumnName("CreatedAt")
-                .HasColumnType("timestamp");
+                .HasColumnType("smalldatetime");
 
             builder.Property(x => x.UpdatedAt)
                 .IsRequired()
                 .HasColumnName("UpdatedAt")
-                .HasColumnType("timestamp");
+                .HasColumnType("smalldatetime");
+
         }
     }
 }
