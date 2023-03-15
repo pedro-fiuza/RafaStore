@@ -56,7 +56,14 @@ namespace RafaStore.Server.Controllers
         [HttpPost("generate-pdf")]
         public IActionResult GeneratePdf(GeneratePdfViewModel note)
         {
-            return File(_customerService.GeneratePdf(note), "application/pdf");
+            try
+            {
+                return File(_customerService.GeneratePdf(note), "application/pdf");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = ex.Message, StackTrace = ex.StackTrace });
+            }
         }
     }
 }
