@@ -41,12 +41,13 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwaggerUI();
-    app.UseSwagger();
+   
     app.UseWebAssemblyDebugging();
 }
 else
 {
+    app.UseSwaggerUI();
+    app.UseSwagger();
     app.UseHsts();
 }
 
