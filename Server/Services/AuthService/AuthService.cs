@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using RafaStore.Server.Data;
 using RafaStore.Shared;
 using RafaStore.Shared.Model;
+using SecureIdentity.Password;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -32,7 +33,7 @@ namespace RafaStore.Server.Services.AuthService
                 response.Success = false;
                 response.Message = "Usuario nao encontrado.";
             }
-            else if(!VerifyPassword(password, user.PasswordHash, user.PasswordSalt))
+            else if(!PasswordHasher.Verify(user.PasswordHash, password))
             {
                 response.Success = false;
                 response.Message = "Senha incorreta.";
@@ -47,48 +48,35 @@ namespace RafaStore.Server.Services.AuthService
 
         public async Task<ServiceResponse<int>> Register(UserModel user, string password)
         {
-            var userVerify = await UserExists(user.Email);
+            try
+            {
+                var userVerify = await UserExists(user.Email);
 
-            if (userVerify is not null)
-                return new ServiceResponse<int>
-                {
-                    Success = false,
-                    Message = "O usuario ja existe"
-                };
+                if (userVerify is not null)
+                    return new ServiceResponse<int>
+                    {
+                        Success = false,
+                        Message = "O usuario ja existe"
+                    };
 
-            CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+                user.PasswordHash = PasswordHasher.Hash(password);
 
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+                context.User.Add(user);
+                await context.SaveChangesAsync();
 
-            context.User.Add(user);
-            await context.SaveChangesAsync();
+                return new ServiceResponse<int> { Data = (int)user.Id, Message = "Cadastro feito com sucesso!" };
+            }
+            catch (Exception ex)
+            {
 
-            return new ServiceResponse<int> { Data = (int)user.Id, Message="Cadastro feito com sucesso!" };
+                throw;
+            }
         }
 
         public async Task<UserModel> UserExists(string email)
         {
             return await context.User.FirstOrDefaultAsync(user => user.Email.ToLower().Equals(email.ToLower()));
         }
-
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using (var hmac = new HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            }
-        }
-
-        private bool VerifyPassword(string password, byte[] passwordHash, byte[] passwordSalt)
-        {
-            using(var hmac = new HMACSHA512(passwordSalt))
-            {
-                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return computedHash.SequenceEqual(passwordHash);
-            }
-        } 
 
         private string CreateToken(UserModel user)
         {

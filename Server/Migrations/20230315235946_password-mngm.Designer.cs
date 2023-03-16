@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RafaStore.Server.Data;
 
@@ -11,9 +12,10 @@ using RafaStore.Server.Data;
 namespace RafaStore.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230315235946_password-mngm")]
+    partial class passwordmngm
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,8 +83,7 @@ namespace RafaStore.Server.Migrations
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("NVARCHAR(255)")
+                        .HasColumnType("NVARCHAR")
                         .HasColumnName("PasswordHash");
 
                     b.Property<DateTime>("UpdatedAt")

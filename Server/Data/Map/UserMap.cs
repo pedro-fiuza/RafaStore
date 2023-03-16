@@ -21,15 +21,11 @@ namespace RafaStore.Server.Data.Map
                 .HasColumnType("varchar")
                 .HasMaxLength(128);
 
-            builder.Property(x => x.PasswordSalt)
-                .IsRequired()
-                .HasColumnName("PasswordSalt")
-                .HasColumnType("NVARCHAR");
-
             builder.Property(x => x.PasswordHash)
                 .IsRequired()
                 .HasColumnName("PasswordHash")
-                .HasColumnType("NVARCHAR");
+                .HasColumnType("NVARCHAR")
+                .HasMaxLength(255);
 
             builder.Property(x => x.CreatedAt)
                 .IsRequired()
