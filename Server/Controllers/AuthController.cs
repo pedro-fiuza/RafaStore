@@ -30,12 +30,21 @@ namespace RafaStore.Server.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<ServiceResponse<string>>> Login(LoginViewModel login)
         {
-            var response = await authService.Login(login.Email, login.Password);
+            try
+            {
+                var response = await authService.Login(login.Email, login.Password);
 
-            if (!response.Success)
-                return BadRequest(response);
+                if (!response.Success)
+                    return BadRequest(response);
 
-            return Ok(response);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, new { Message = ex.Message, InnerException = ex.InnerException, StackTrace = ex.StackTrace});
+            }
+            
         }
     }
 }
