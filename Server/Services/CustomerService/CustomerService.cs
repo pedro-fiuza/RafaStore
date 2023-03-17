@@ -189,13 +189,13 @@ namespace RafaStore.Server.Services.HospitalService
                 row.ConstantItem(250);
                 row.RelativeItem().Border(1).AlignCenter().Text($"  N {i+1}"+ "/" +$"{note.NumeroDeParcelas}  ");
                 row.ConstantItem(110);
-                row.RelativeItem().Border(1).AlignCenter().Text($"R$ {note.ValorTotal/note.NumeroDeParcelas}");
+                row.RelativeItem().Border(1).AlignCenter().Text($"R$ {Math.Round((decimal)(note.ValorTotal/note.NumeroDeParcelas), 2)}");
             });
         }
 
         private void ComposeFooter(IContainer container, GeneratePdfViewModel customer, DateTime date)
         {
-            var valorParcela = Convert.ToDecimal(customer.Note.ValorTotal/customer.Note.NumeroDeParcelas);
+            var valorParcela = Math.Round(Convert.ToDecimal(customer.Note.ValorTotal/customer.Note.NumeroDeParcelas), 2);
 
             container.Row(row =>
             {
