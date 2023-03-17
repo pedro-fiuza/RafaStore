@@ -207,7 +207,7 @@ namespace RafaStore.Server.Services.HospitalService
                     text.Span("  a  ");
                     text.Span("BETTINARDI ROUPAS E ACESSORIOS LTDA").Bold().Underline();
                     text.Span("  CPF/CNPJ:  ");
-                    text.Span($"{customer.Customer.CpfOrCnpj}").Underline();
+                    text.Span($"33.761.757/0001-57").Underline();
                     text.Span("  ou à sua ordem, a quantia de");
                     text.Span($"  R$ {valorParcela} {HelperNumberToText.EscreverExtenso(valorParcela)}").Bold();
                     text.Span("  em moeda corrente, pagável em LONDRINA - PARANÁ");
