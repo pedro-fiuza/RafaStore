@@ -152,11 +152,11 @@ namespace RafaStore.Server.Services.HospitalService
                         {
                             page.Size(PageSizes.A4);
 
-                            page.Content().MinimalBox().PaddingVertical(7).PaddingHorizontal(10).Border(1).Column(x =>
+                            page.Content().MinimalBox().PaddingVertical(2).PaddingHorizontal(10).Border(1).Column(x =>
                             {
                                 for (int i = 0; i < customer.Note.NumeroDeParcelas; i++)
                                 {
-                                    var stringDate = DateTime.Now.Date.AddMonths(i);
+                                    var stringDate = DateTime.Now.Date.AddMonths(i+1);
                                     x.Spacing(2);
                                     x.Item().Element(x => ComposeHeader(x, stringDate));
                                     x.Item().PaddingRight(5).Element(y => ComposeBody(y, customer.Note, i));
@@ -195,7 +195,7 @@ namespace RafaStore.Server.Services.HospitalService
 
         private void ComposeFooter(IContainer container, GeneratePdfViewModel customer, DateTime date)
         {
-            var valorParcela = (decimal)(customer.Note.ValorTotal/customer.Note.NumeroDeParcelas);
+            var valorParcela = Convert.ToDecimal(customer.Note.ValorTotal/customer.Note.NumeroDeParcelas);
 
             container.Row(row =>
             {
@@ -229,7 +229,7 @@ namespace RafaStore.Server.Services.HospitalService
                 row.ConstantItem(50);
                 row.RelativeItem().PaddingRight(5).PaddingBottom(0).Text(text =>
                 {
-                    text.Line($"Data de emissão: {date.Date:dd/MM/yyyy}");
+                    text.Line($"Data de emissão: {DateTime.Now:dd/MM/yyyy}");
                     text.EmptyLine();
                     text.Line("                                                                                                  ").Underline();
                     text.Line($"{customer.Name}").Bold();
