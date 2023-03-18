@@ -146,29 +146,30 @@ namespace RafaStore.Server.Services.HospitalService
 
         public byte[] GeneratePdf(GeneratePdfViewModel customer)
         {
-           var pdf = Document.Create(document =>
-                    {
-                        document.Page(page =>
-                        {
-                            page.Size(PageSizes.A4);
+            Thread.CurrentThread.CurrentCulture = pt;
+            var pdf = Document.Create(document =>
+                     {
+                         document.Page(page =>
+                         {
+                             page.Size(PageSizes.A4);
 
-                            page.Content().MinimalBox().PaddingVertical(2).PaddingHorizontal(10).Border(1).Column(x =>
-                            {
-                                for (int i = 0; i < customer.Note.NumeroDeParcelas; i++)
-                                {
-                                    var stringDate = DateTime.Now.Date.AddMonths(i+1);
-                                    x.Spacing(2);
-                                    x.Item().Element(x => ComposeHeader(x, stringDate));
-                                    x.Item().PaddingRight(5).Element(y => ComposeBody(y, customer.Note, i));
-                                    x.Item().PaddingLeft(5).Element(z => ComposeFooter(z, customer, stringDate));
-                                    x.Item().PaddingTop(0).PaddingLeft(5).Element(i => ComposeParcialBody(i, customer.Customer, stringDate));
-                                    if(i < customer.Note.NumeroDeParcelas-1)
-                                        x.Item().LineHorizontal(5);
-                                }
-                            });
-                        });
-                    })
-                    .GeneratePdf();
+                             page.Content().MinimalBox().PaddingVertical(2).PaddingHorizontal(10).Border(1).Column(x =>
+                             {
+                                 for (int i = 0; i < customer.Note.NumeroDeParcelas; i++)
+                                 {
+                                     var stringDate = DateTime.Now.Date.AddMonths(i + 1);
+                                     x.Spacing(2);
+                                     x.Item().Element(x => ComposeHeader(x, stringDate));
+                                     x.Item().PaddingRight(5).Element(y => ComposeBody(y, customer.Note, i));
+                                     x.Item().PaddingLeft(5).Element(z => ComposeFooter(z, customer, stringDate));
+                                     x.Item().PaddingTop(0).PaddingLeft(5).Element(i => ComposeParcialBody(i, customer.Customer, stringDate));
+                                     if (i < customer.Note.NumeroDeParcelas - 1)
+                                         x.Item().LineHorizontal(5);
+                                 }
+                             });
+                         });
+                     })
+                     .GeneratePdf();
 
             return pdf;
         }
@@ -187,15 +188,15 @@ namespace RafaStore.Server.Services.HospitalService
             container.Row(row =>
             {
                 row.ConstantItem(250);
-                row.RelativeItem().Border(1).AlignCenter().Text($"  N {i+1}"+ "/" +$"{note.NumeroDeParcelas}  ");
+                row.RelativeItem().Border(1).AlignCenter().Text($"  N {i + 1}" + "/" + $"{note.NumeroDeParcelas}  ");
                 row.ConstantItem(110);
-                row.RelativeItem().Border(1).AlignCenter().Text($"R$ {Math.Round((decimal)(note.ValorTotal/note.NumeroDeParcelas), 2)}");
+                row.RelativeItem().Border(1).AlignCenter().Text($"R$ {Math.Round((decimal)(note.ValorTotal / note.NumeroDeParcelas), 2)}");
             });
         }
 
         private void ComposeFooter(IContainer container, GeneratePdfViewModel customer, DateTime date)
         {
-            var valorParcela = Math.Round(Convert.ToDecimal(customer.Note.ValorTotal/customer.Note.NumeroDeParcelas), 2);
+            var valorParcela = Math.Round(Convert.ToDecimal(customer.Note.ValorTotal / customer.Note.NumeroDeParcelas), 2);
 
             container.Row(row =>
             {
