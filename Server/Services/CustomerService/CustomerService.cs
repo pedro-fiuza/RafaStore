@@ -204,13 +204,13 @@ namespace RafaStore.Server.Services.HospitalService
                 {
                     text.Span("Ao(s)");
                     text.Span("   ");
-                    text.Span($"{pt.DateTimeFormat.GetDayName(date.DayOfWeek)}, {date.Day} de {pt.DateTimeFormat.GetMonthName(date.Month)} de {date.Year} pagarei por esta única via de nota promissória").Underline();
+                    text.Span($"{pt.DateTimeFormat.GetDayName(date.DayOfWeek)}, {date.Day} de {pt.DateTimeFormat.GetMonthName(date.Month)} de {date.Year} pagarei por esta única via de nota promissória").FontSize(10).Underline();
                     text.Span("  a  ");
                     text.Span("BETTINARDI ROUPAS E ACESSORIOS LTDA").Bold().Underline();
                     text.Span("  CPF/CNPJ:  ");
                     text.Span($"33.761.757/0001-57").Underline();
                     text.Span("  ou à sua ordem, a quantia de");
-                    text.Span($"  R$ {valorParcela} {HelperNumberToText.EscreverExtenso(valorParcela)}").Bold();
+                    text.Span($"  R$ {valorParcela} {HelperNumberToText.EscreverExtenso(valorParcela)}").FontSize(10).Bold();
                     text.Span("  em moeda corrente, pagável em LONDRINA - PARANÁ");
                     text.AlignLeft();
                 });
