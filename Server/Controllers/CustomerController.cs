@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RafaStore.Shared.Model;
 using RafaStore.Shared.ViewModel;
 
@@ -6,6 +7,7 @@ namespace RafaStore.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CustomerController : ControllerBase
     {
 
