@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RafaStore.Shared;
 using RafaStore.Shared.Model;
 
@@ -15,6 +16,7 @@ namespace RafaStore.Server.Controllers
             this.authService = authService;
         }
 
+        [Authorize]
         [HttpPost("register")]
         public async Task<ActionResult<ServiceResponse<int>>> Register(UserRegisterViewModel user)
         {
