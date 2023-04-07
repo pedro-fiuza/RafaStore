@@ -19,5 +19,6 @@ namespace RafaStore.Client.Services.CustomerService
         Task<ServiceResponse<CustomerModel>> GetCustomerById(int id);
         Task<CustomerModel> UpdateCustomer(CustomerModel Customer);
         Task<byte[]> GeneratePdf(GeneratePdfViewModel note);
+        Task<byte[]> DownloadPdf();
     }
 }

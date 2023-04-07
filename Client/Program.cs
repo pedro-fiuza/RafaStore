@@ -11,6 +11,7 @@ using MudBlazor.Services;
 using RafaStore.Client;
 using RafaStore.Client.Provider;
 using RafaStore.Client.Services.CustomerService;
+using RafaStore.Client.Services.FileService;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -31,6 +32,7 @@ builder.Services.AddMudServices(config =>
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();

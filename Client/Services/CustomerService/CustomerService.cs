@@ -32,6 +32,12 @@ namespace RafaStore.Client.Services.CustomerService
             return await file.Content.ReadAsByteArrayAsync();
         }
 
+        public async Task<byte[]> DownloadPdf()
+        {
+            var file = await httpClient.PostAsJsonAsync("api/customer/teste", new object());
+            return await file.Content.ReadAsByteArrayAsync();
+        }
+
         public async Task<ServiceResponse<CustomerModel>> GetCustomerById(int id)
         {
             var result = await httpClient.GetFromJsonAsync<ServiceResponse<CustomerModel>>($"api/customer/{id}");

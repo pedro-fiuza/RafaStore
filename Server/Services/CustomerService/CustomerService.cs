@@ -2,6 +2,7 @@
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using RafaStore.Server.Services.FileService;
 using RafaStore.Server.Util;
 using RafaStore.Shared;
 using RafaStore.Shared.Model;
@@ -15,9 +16,11 @@ namespace RafaStore.Server.Services.HospitalService
         private readonly CultureInfo pt = new("pt-BR");
         private readonly RegionInfo region = new("pt-BR");
         private readonly DataContext context;
-        public CustomerService(DataContext context)
+        private readonly IFileService _fileService;
+        public CustomerService(DataContext context, IFileService fileService)
         {
             this.context = context;
+            _fileService = fileService;
         }
 
         public async Task<ServiceResponse<CustomerModel>> Add(CustomerModel customer)
@@ -144,7 +147,7 @@ namespace RafaStore.Server.Services.HospitalService
             return await PaginateCustomers(customer, page);
         }
 
-        public byte[] GeneratePdf(GeneratePdfViewModel customer)
+        public async Task<byte[]> GeneratePdf(GeneratePdfViewModel customer)
         {
             Thread.CurrentThread.CurrentCulture = pt;
             var pdf = Document.Create(document =>
@@ -171,7 +174,16 @@ namespace RafaStore.Server.Services.HospitalService
                      })
                      .GeneratePdf();
 
+            await _fileService.CreateFile(new MemoryStream(pdf), customer.Customer);
+
             return pdf;
+        }
+
+        public async Task<byte[]> DownloadCustomerNote(int noteId)
+        {
+            var note = await _fileService.GetNoteById(noteId);
+
+            return await _fileService.DownloadToStream(note.Blob, note.FileName);
         }
 
         private void ComposeHeader(IContainer container, DateTime date)

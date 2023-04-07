@@ -1,0 +1,169 @@
+﻿@page "/customer/{id:int}/notes"
+@using RafaStore.Shared.Model;
+@inject IFileService NoteService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS;
+@implements IDisposable
+@attribute [Authorize]
+
+
+<PageTitle>Clientes</PageTitle>
+
+<MudContainer Class="mt-4">
+    <MudItem Class="d-flex justify-end p-0">
+        <MudText Typo="Typo.h5"
+                 Class="mr-auto pt-2" Style="color: #023891;">Clientes</MudText>
+        <MudFab Style="background: #023891; color:#fff; " Size="Size.Medium" StartIcon="@Icons.Material.Outlined.ChangeCircle" OnClick="(() => Reload())" />
+    </MudItem>
+    <MudContainer Style="margin-top: 40px;
+                     max-width: 700px;
+                     display: flex;
+                     align-items: center;
+                     justify-content: center;">
+        <MudDateRangePicker Style="flex: 1;
+                             height: 90px;
+                             padding: 0px;
+                             border: 0;
+                             border-radius: 5px 0 0 5px;
+                             color: #3a3a3a;
+                             border: 2px solid #fff;
+                             border-right: 0;"
+                            Color="Color.Info"
+                            Variant="Variant.Outlined"
+            Label="Buscar entre" @bind-DateRange="_dateRange" />
+        <MudButton Style="width: 160px;
+                          height: 55px;
+                          background: #023891;
+                          border-radius: 0 5px 5px 0;
+                          margin-top: 4px;
+                          margin-left: 0;
+                          border: 0;
+                          color: #fff;
+                          font-weight: bold;
+                          transition: background-color 0.2s;"
+                   OnClick="(() => HandleSearch())">
+            @if (_processing)
+            {
+                <MudProgressCircular Style="color: whitesmoke;" Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                <MudText Style="color: whitesmoke;
+                                    font-weight: bold">
+                    Pesquisar
+                </MudText>
+            }
+        </MudButton>
+    </MudContainer>
+    <MudGrid Justify="Justify.Center" Class="mt-8">
+        @if (NoteService.Notes is null || NoteService.Notes?.Count == 0)
+        {
+            <MudText>@NoteService.Message</MudText>
+        }
+        else
+        {
+            @foreach (var note in NoteService.Notes)
+            {
+
+                <MudCard Style="width:100%;" Elevation="25" Class="rounded-lg p-0 mb-2">
+                    <MudLink Underline="Underline.None" Color="Color.Dark">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <strong>@note.FileName</strong>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudIconButton Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.FileDownload" OnClick="async ()  => await DownloadPdf(note)" />
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                    </MudLink>
+                </MudCard>
+            }
+        }
+    </MudGrid>
+    <MudContainer Class="d-flex position-relative justify-content-center bottom-0 mb-2 w-100">
+        <MudPagination Class="mt-4"
+                       BoundaryCount="1"
+                       MiddleCount="1"
+                       Color="Color.Dark"
+                       Count="NoteService.PageCount"
+                       SelectedChanged="HandlePage"
+                       Variant="Variant.Filled" />
+    </MudContainer>
+</MudContainer>
+
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private string searchText = string.Empty;
+    private DateRange _dateRange = new DateRange();
+    private bool preventKey = false;
+    private bool _processing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await NoteService.GetAllNotesPaginated(NoteService.CurrentPage);
+        NoteService.NotesChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        NoteService.NotesChanged -= StateHasChanged;
+    }
+
+    private async Task RedirectRegister()
+    {
+        NavigationManager.NavigateTo("register");
+    }
+
+    private async void HandlePage(int page)
+    {
+        if (_dateRange.Start is null && _dateRange.End is null)
+        {
+            await NoteService.GetAllNotesPaginated(page);
+        }
+        else
+        {
+            await NoteService.SearchNotes(_dateRange.Start, _dateRange.End, page);
+        }
+    }
+
+    private async Task HandleSearch()
+    {
+        _processing = true;
+        if (_dateRange.Start is null && _dateRange.End is null)
+        {
+            await NoteService.GetAllNotesPaginated(NoteService.CurrentPage);
+        }
+        else
+        {
+            await NoteService.SearchNotes(_dateRange.Start, _dateRange.End, NoteService.CurrentPage);
+
+        }
+        searchText = string.Empty;
+        _processing = false;
+    }
+
+    private async Task Reload()
+    {
+        await OnInitializedAsync();
+    }
+
+    private async Task Enter(KeyboardEventArgs e)
+    {
+        if(e.Code == "Enter")
+        {
+            preventKey = true;
+            await HandleSearch();
+        }
+    }
+
+    private async Task DownloadPdf(NoteFileModel? note)
+    {
+        var bytesBase64 = await NoteService.DownloadPdf(note.Id);
+
+            JS.InvokeVoidAsync("saveAsFile", note.FileName, Convert.ToBase64String(bytesBase64));
+        }
+    }
+}

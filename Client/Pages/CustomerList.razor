@@ -79,6 +79,7 @@
                             <CardHeaderActions>
                                 <MudIconButton Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.Edit" OnClick="() => EditCustomer(customer.Id)" />
                                 <MudIconButton Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.DocumentScanner" OnClick="async ()  => await GeneratePdfDocument(customer)" />
+                                <MudIconButton Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.DocumentScanner" OnClick="async ()  => await DownloadPdf()" />
                             </CardHeaderActions>
                         </MudCardHeader>
                         <MudDivider />
@@ -230,6 +231,16 @@
                 });
 
             JS.InvokeVoidAsync("saveAsFile", $"{customer.Name}-nota-promissoria", Convert.ToBase64String(bytesBase64));
+        }
+    }
+
+
+    private async Task DownloadPdf()
+    {
+
+        var bytesBase64 = await CustomerService.DownloadPdf();
+
+            JS.InvokeVoidAsync("saveAsFile", $"nota-promissoria", Convert.ToBase64String(bytesBase64));
         }
     }
 }
