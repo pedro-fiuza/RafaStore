@@ -7,6 +7,7 @@ namespace RafaStore.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CustomerController : ControllerBase
     {
 
@@ -77,6 +78,14 @@ namespace RafaStore.Server.Controllers
             {
                 return StatusCode(500, new { Message = ex.Message, StackTrace = ex.StackTrace });
             }
+        }
+
+        [HttpDelete("delete-customer")]
+        public async Task<IActionResult> DeleteCustomer(int customerId)
+        {
+            await _customerService.DeleteCustomer(customerId);
+
+            return Ok();
         }
 
 

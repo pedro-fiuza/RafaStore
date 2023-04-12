@@ -156,7 +156,7 @@ namespace RafaStore.Server.Services.HospitalService
                          {
                              page.Size(PageSizes.A4);
 
-                             page.Content().MinimalBox().PaddingVertical(2).PaddingHorizontal(10).Border(1).Column(x =>
+                             page.Content().MinimalBox().PaddingTop(30).PaddingHorizontal(10).Border(1).Column(x =>
                              {
                                  for (int i = 0; i < customer.Note.NumeroDeParcelas; i++)
                                  {
@@ -174,9 +174,30 @@ namespace RafaStore.Server.Services.HospitalService
                      })
                      .GeneratePdf();
 
-            await _fileService.CreateFile(new MemoryStream(pdf), customer.Customer);
+            await _fileService.CreateFile(new MemoryStream(pdf), customer.Customer, new NoteFileModel
+            {
+                FileName = $"{customer.Customer.Name}-{DateTime.Now:dd-MM-yyyy-HH-mm-ss}",
+                CustomerModelId = customer.Customer.Id,
+                ValorParcela = Math.Round((decimal)(customer.Note.ValorTotal / customer.Note.NumeroDeParcelas), 2),
+                ValorTotal = customer.Note.ValorTotal,
+                NumeroDeParcelas = customer.Note.NumeroDeParcelas
+            }) ;
 
             return pdf;
+        }
+
+        public async Task DeleteCustomer(int customerId)
+        {
+            var customer = await context.Customer.Include(x => x.File).SingleOrDefaultAsync(x => x.Id == customerId);
+
+            context.Customer.Remove(customer);
+
+            await context.SaveChangesAsync();
+
+            foreach (var file in customer.File)
+            {
+                await _fileService.DeleteFile(file.Id);
+            }
         }
 
         public async Task<byte[]> DownloadCustomerNote(int noteId)
@@ -218,12 +239,12 @@ namespace RafaStore.Server.Services.HospitalService
                     text.Span("   ");
                     text.Span($"{pt.DateTimeFormat.GetDayName(date.DayOfWeek)}, {date.Day} de {pt.DateTimeFormat.GetMonthName(date.Month)} de {date.Year} pagarei por esta única via de nota promissória").FontSize(10).Underline();
                     text.Span("  a  ");
-                    text.Span("BETTINARDI ROUPAS E ACESSORIOS LTDA").Bold().Underline();
+                    text.Span("BETTINARDI ROUPAS E ACESSORIOS LTDA").FontSize(10).Bold().Underline();
                     text.Span("  CPF/CNPJ:  ");
                     text.Span($"33.761.757/0001-57").Underline();
                     text.Span("  ou à sua ordem, a quantia de");
                     text.Span($"  R$ {valorParcela} {HelperNumberToText.EscreverExtenso(valorParcela)}").FontSize(10).Bold();
-                    text.Span("  em moeda corrente, pagável em LONDRINA - PARANÁ");
+                    text.Span("  em moeda corrente, pagável em LONDRINA - PARANÁ").FontSize(10);
                     text.AlignLeft();
                 });
             });
@@ -233,21 +254,21 @@ namespace RafaStore.Server.Services.HospitalService
         {
             container.Row(row =>
             {
-                row.RelativeItem().PaddingTop(5).Text(text =>
+                row.RelativeItem().PaddingTop(5).PaddingBottom(0).Text(text =>
                 {
-                    text.Line($"Emitente: {customer.Name}");
-                    text.Line($"CPF/CNPJ: {customer.CpfOrCnpj}");
-                    text.Line($"Endereço: {customer.Address}");
+                    text.Line($"Data de emissão: {DateTime.Now:dd/MM/yyyy}").FontSize(10);
+                    text.Line($"Emitente: {customer.Name}").FontSize(10);
+                    text.Line($"CPF/CNPJ: {customer.CpfOrCnpj}").FontSize(10);
+                    text.Line($"Endereço: {customer.Address}").FontSize(10);
                 });
                 row.ConstantItem(50);
                 row.RelativeItem().PaddingRight(5).PaddingBottom(0).Text(text =>
                 {
-                    text.Line($"Data de emissão: {DateTime.Now:dd/MM/yyyy}");
                     text.EmptyLine();
                     text.Line("                                                                                                  ").Underline();
-                    text.Line($"{customer.Name}").Bold();
-                    text.Line($"{customer.CpfOrCnpj}").Bold();
-                    text.AlignRight();
+                    text.Line($"{customer.Name}").FontSize(10).Bold();
+                    text.Line($"{customer.CpfOrCnpj}").FontSize(10).Bold();
+                    text.AlignLeft();
                 });
             });
         }

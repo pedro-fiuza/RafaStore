@@ -15,6 +15,7 @@ namespace RafaStore.Client.Services.CustomerService
         Task SearchCustomers(string searchText, int page);
         Task ReOrder();
         Task<CustomerModel> CreateCustomer(CustomerModel customer);
+        Task<bool> DeleteCustomer(int? customerId);
         Task GetAllCustomersPaginated(int page);
         Task<ServiceResponse<CustomerModel>> GetCustomerById(int id);
         Task<CustomerModel> UpdateCustomer(CustomerModel Customer);

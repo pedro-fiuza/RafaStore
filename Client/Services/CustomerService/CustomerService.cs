@@ -1,6 +1,7 @@
 ﻿using Microsoft.JSInterop;
 using RafaStore.Shared.Model;
 using RafaStore.Shared.ViewModel;
+using System.Net;
 
 namespace RafaStore.Client.Services.CustomerService
 {
@@ -36,6 +37,12 @@ namespace RafaStore.Client.Services.CustomerService
         {
             var file = await httpClient.PostAsJsonAsync("api/customer/teste", new object());
             return await file.Content.ReadAsByteArrayAsync();
+        }
+
+        public async Task<bool> DeleteCustomer(int? customerId)
+        {
+            var file = await httpClient.DeleteAsync($"api/customer/delete-customer?customerId={customerId}");
+            return file.StatusCode.Equals(HttpStatusCode.OK);
         }
 
         public async Task<ServiceResponse<CustomerModel>> GetCustomerById(int id)

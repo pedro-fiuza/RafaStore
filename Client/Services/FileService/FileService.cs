@@ -1,5 +1,6 @@
 ﻿using RafaStore.Shared.Model;
 using RafaStore.Shared.ViewModel;
+using System.Net;
 
 namespace RafaStore.Client.Services.FileService
 {
@@ -23,10 +24,16 @@ namespace RafaStore.Client.Services.FileService
             return await file.Content.ReadAsByteArrayAsync();
         }
 
-        public async Task SearchNotes(DateTime? startDate, DateTime? endDate, int page)
+        public async Task<bool> DeletePdf(int? noteId)
+        {
+            var file = await httpClient.DeleteAsync($"api/note/delete-pdf/{noteId}");
+            return file.StatusCode.Equals(HttpStatusCode.OK);
+        }
+
+        public async Task SearchNotes(int customerId, DateTime? startDate, DateTime? endDate, int page)
         {
             var teste = $"api/note/search?startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}&page={page}";
-            var result = await httpClient.GetFromJsonAsync<ServiceResponse<NoteFileListViewModel>>($"api/note/search?startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}&page={page}");
+            var result = await httpClient.GetFromJsonAsync<ServiceResponse<NoteFileListViewModel>>($"api/note/search?customerId={customerId}&startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}&page={page}");
 
             if (result != null && result.Data != null)
             {
@@ -39,9 +46,9 @@ namespace RafaStore.Client.Services.FileService
             NotesChanged?.Invoke();
         }
 
-        public async Task GetAllNotesPaginated(int page)
+        public async Task GetAllNotesPaginated(int customerId, int page)
         {
-            var result = await httpClient.GetFromJsonAsync<ServiceResponse<NoteFileListViewModel>>($"api/note?page={page}");
+            var result = await httpClient.GetFromJsonAsync<ServiceResponse<NoteFileListViewModel>>($"api/note?customerId={customerId}&page={page}");
 
             if (result != null && result.Data != null)
             {

@@ -27,6 +27,20 @@ public class FileMap : IEntityTypeConfiguration<NoteFileModel>
             .HasColumnType("varchar")
             .HasMaxLength(40);
 
+        builder.Property(x => x.ValorParcela)
+            .IsRequired()
+            .HasColumnName("ValorParcela")
+            .HasColumnType("DECIMAL(18,2)");
+
+        builder.Property(x => x.ValorTotal)
+            .IsRequired()
+            .HasColumnName("ValorTotal")
+            .HasColumnType("DECIMAL(18,2)");
+
+        builder.Property(x => x.NumeroDeParcelas)
+            .IsRequired()
+            .HasColumnName("NumeroDeParcelas")
+            .HasColumnType("integer");
         builder.Property(x => x.CreatedAt)
             .IsRequired()
             .HasColumnName("CreatedAt")

@@ -13,5 +13,6 @@ namespace RafaStore.Server.Services.HospitalService
         Task<ServiceResponse<CustomerListViewModel>> GetAllCustomersPaginated(int page);
         Task<byte[]> GeneratePdf(GeneratePdfViewModel customer);
         Task<byte[]> DownloadCustomerNote(int noteId);
+        Task DeleteCustomer(int customerId);
     }
 }

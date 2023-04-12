@@ -9,8 +9,9 @@ namespace RafaStore.Client.Services.FileService
         string Message { get; set; }
         int CurrentPage { get; set; } 
         int PageCount { get; set; }
-        Task GetAllNotesPaginated(int page);
-        Task SearchNotes(DateTime? startDate, DateTime? endDate, int page);
+        Task GetAllNotesPaginated(int customerId, int page);
+        Task SearchNotes(int customerId, DateTime? startDate, DateTime? endDate, int page);
         Task<byte[]> DownloadPdf(int? noteId);
+        Task<bool> DeletePdf(int? noteId);
     }
 }

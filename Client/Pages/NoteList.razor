@@ -7,12 +7,13 @@
 @attribute [Authorize]
 
 
-<PageTitle>Clientes</PageTitle>
+<PageTitle>Notas</PageTitle>
 
 <MudContainer Class="mt-4">
     <MudItem Class="d-flex justify-end p-0">
         <MudText Typo="Typo.h5"
-                 Class="mr-auto pt-2" Style="color: #023891;">Clientes</MudText>
+                 Class="mr-auto pt-2" Style="color: #023891;">Notas</MudText>
+        <MudFab Style="background: #023891; color:#fff; margin-right: 10px;" Size="Size.Medium" StartIcon="@Icons.Material.Outlined.ArrowCircleLeft" OnClick="(() => BackToCustomers())" />
         <MudFab Style="background: #023891; color:#fff; " Size="Size.Medium" StartIcon="@Icons.Material.Outlined.ChangeCircle" OnClick="(() => Reload())" />
     </MudItem>
     <MudContainer Style="margin-top: 40px;
@@ -73,8 +74,20 @@
                             </CardHeaderContent>
                             <CardHeaderActions>
                                 <MudIconButton Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.FileDownload" OnClick="async ()  => await DownloadPdf(note)" />
+                                <MudIconButton Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.Delete" OnClick="async ()  => await DeletePdf(note)" />
                             </CardHeaderActions>
                         </MudCardHeader>
+                        <MudDivider />
+                        <MudCardContent Class="p-1">
+                            <MudList Class="mx-auto mt-0 p-0">
+                                <MudListItem Class="mb-0 pb-0 pt-1" Icon="@Icons.Material.Outlined.MonetizationOn" IconColor="Color.Dark">
+                                    Valor da parcela: R$@note.ValorParcela
+                                </MudListItem>
+                                <MudListItem Class="mb-0 pb-0 pt-1" Icon="@Icons.Material.Outlined.Money" IconColor="Color.Dark">
+                                    Valor total: R$@note.ValorTotal
+                                </MudListItem>
+                            </MudList>
+                        </MudCardContent>
                     </MudLink>
                 </MudCard>
             }
@@ -103,7 +116,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await NoteService.GetAllNotesPaginated(NoteService.CurrentPage);
+        await NoteService.GetAllNotesPaginated(Id, NoteService.CurrentPage);
         NoteService.NotesChanged += StateHasChanged;
     }
 
@@ -121,11 +134,11 @@
     {
         if (_dateRange.Start is null && _dateRange.End is null)
         {
-            await NoteService.GetAllNotesPaginated(page);
+            await NoteService.GetAllNotesPaginated(Id, page);
         }
         else
         {
-            await NoteService.SearchNotes(_dateRange.Start, _dateRange.End, page);
+            await NoteService.SearchNotes(Id, _dateRange.Start, _dateRange.End, page);
         }
     }
 
@@ -134,11 +147,11 @@
         _processing = true;
         if (_dateRange.Start is null && _dateRange.End is null)
         {
-            await NoteService.GetAllNotesPaginated(NoteService.CurrentPage);
+            await NoteService.GetAllNotesPaginated(Id, NoteService.CurrentPage);
         }
         else
         {
-            await NoteService.SearchNotes(_dateRange.Start, _dateRange.End, NoteService.CurrentPage);
+            await NoteService.SearchNotes(Id, _dateRange.Start, _dateRange.End, NoteService.CurrentPage);
 
         }
         searchText = string.Empty;
@@ -159,11 +172,21 @@
         }
     }
 
+    private async Task DeletePdf(NoteFileModel? note)
+    {
+        await NoteService.DeletePdf(note.Id);
+        await OnInitializedAsync();
+    }
+
+    private void BackToCustomers()
+    {
+        NavigationManager.NavigateTo("/customers");
+    }
+
     private async Task DownloadPdf(NoteFileModel? note)
     {
         var bytesBase64 = await NoteService.DownloadPdf(note.Id);
 
-            JS.InvokeVoidAsync("saveAsFile", note.FileName, Convert.ToBase64String(bytesBase64));
-        }
+        JS.InvokeVoidAsync("saveAsFile", note.FileName, Convert.ToBase64String(bytesBase64));
     }
 }
