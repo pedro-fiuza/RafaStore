@@ -12,11 +12,13 @@ namespace RafaStore.Server.Data
 
         public DbSet<UserModel> User { get; set; }
         public DbSet<CustomerModel> Customer { get; set; }
+        public DbSet<NoteFileModel> Note { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
            modelBuilder.ApplyConfiguration(new UserMap());
            modelBuilder.ApplyConfiguration(new CustomerMap());
+           modelBuilder.ApplyConfiguration(new FileMap());
         }
     }
 }

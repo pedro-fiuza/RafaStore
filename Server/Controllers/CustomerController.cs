@@ -59,12 +59,35 @@ namespace RafaStore.Server.Controllers
         {
             try
             {
-                return File(_customerService.GeneratePdf(note), "application/pdf");
+                return File(_customerService.GeneratePdf(note).Result, "application/pdf");
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { Message = ex.Message, StackTrace = ex.StackTrace });
             }
         }
+
+        [HttpPost("download-pdf")]
+        public IActionResult GeneratePdf(int noteId)
+        {
+            try
+            {
+                return File(_customerService.DownloadCustomerNote(noteId).Result, "application/pdf");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = ex.Message, StackTrace = ex.StackTrace });
+            }
+        }
+
+        [HttpDelete("delete-customer")]
+        public async Task<IActionResult> DeleteCustomer(int customerId)
+        {
+            await _customerService.DeleteCustomer(customerId);
+
+            return Ok();
+        }
+
+
     }
 }

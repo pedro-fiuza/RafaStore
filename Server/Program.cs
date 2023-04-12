@@ -4,6 +4,7 @@ global using RafaStore.Server.Services.HospitalService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using RafaStore.Server.Services.FileService;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 builder.Services.AddEndpointsApiExplorer();
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -41,15 +43,15 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-   
+    app.UseSwaggerUI();
+    app.UseSwagger();
     app.UseWebAssemblyDebugging();
 }
 else
 {
-    app.UseSwaggerUI();
-    app.UseSwagger();
     app.UseHsts();
 }
+
 
 app.UseHttpsRedirection();
 

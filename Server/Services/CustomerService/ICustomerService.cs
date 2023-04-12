@@ -11,6 +11,8 @@ namespace RafaStore.Server.Services.HospitalService
         Task<ServiceResponse<CustomerListViewModel>> SearchCustomers(string searchText, int page);
         Task<ServiceResponse<CustomerModel>> GetCustomerById(int id);
         Task<ServiceResponse<CustomerListViewModel>> GetAllCustomersPaginated(int page);
-        byte[] GeneratePdf(GeneratePdfViewModel note);
+        Task<byte[]> GeneratePdf(GeneratePdfViewModel customer);
+        Task<byte[]> DownloadCustomerNote(int noteId);
+        Task DeleteCustomer(int customerId);
     }
 }

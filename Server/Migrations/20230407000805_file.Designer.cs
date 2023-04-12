@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RafaStore.Server.Data;
 
@@ -11,9 +12,10 @@ using RafaStore.Server.Data;
 namespace RafaStore.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230407000805_file")]
+    partial class file
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,47 +73,26 @@ namespace RafaStore.Server.Migrations
 
                     b.Property<string>("Blob")
                         .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("varchar(40)")
-                        .HasColumnName("Blob");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("smalldatetime")
-                        .HasColumnName("CreatedAt");
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("CustomerModelId")
                         .HasColumnType("int");
 
                     b.Property<string>("FileName")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("FileName");
-
-                    b.Property<int?>("NumeroDeParcelas")
-                        .IsRequired()
-                        .HasColumnType("integer")
-                        .HasColumnName("NumeroDeParcelas");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("smalldatetime")
-                        .HasColumnName("UpdatedAt");
-
-                    b.Property<decimal?>("ValorParcela")
-                        .IsRequired()
-                        .HasColumnType("DECIMAL(18,2)")
-                        .HasColumnName("ValorParcela");
-
-                    b.Property<decimal?>("ValorTotal")
-                        .IsRequired()
-                        .HasColumnType("DECIMAL(18,2)")
-                        .HasColumnName("ValorTotal");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerModelId");
 
-                    b.ToTable("NoteFileModel", (string)null);
+                    b.ToTable("NoteFileModel");
                 });
 
             modelBuilder.Entity("RafaStore.Shared.Model.UserModel", b =>
@@ -151,9 +132,7 @@ namespace RafaStore.Server.Migrations
                 {
                     b.HasOne("RafaStore.Shared.Model.CustomerModel", "CustomerModel")
                         .WithMany("File")
-                        .HasForeignKey("CustomerModelId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .HasConstraintName("FK_Customer_File");
+                        .HasForeignKey("CustomerModelId");
 
                     b.Navigation("CustomerModel");
                 });

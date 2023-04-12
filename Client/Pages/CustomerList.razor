@@ -71,7 +71,7 @@
             {
 
                 <MudCard Style="width:100%;" Elevation="25" Class="rounded-lg p-0 mb-2">
-                    <MudLink Underline="Underline.None" Color="Color.Dark">
+                    
                         <MudCardHeader>
                             <CardHeaderContent>
                                 <strong>@customer.Name</strong>
@@ -79,8 +79,10 @@
                             <CardHeaderActions>
                                 <MudIconButton Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.Edit" OnClick="() => EditCustomer(customer.Id)" />
                                 <MudIconButton Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.DocumentScanner" OnClick="async ()  => await GeneratePdfDocument(customer)" />
+                                <MudIconButton Color="Color.Dark" Size="Size.Small" Icon="@Icons.Material.Filled.Delete" OnClick="async ()  => await DeleteCustomer(customer.Id)" />
                             </CardHeaderActions>
                         </MudCardHeader>
+                    <MudLink Underline="Underline.None" Color="Color.Dark" Href="@($"customer/{customer.Id}/notes")">
                         <MudDivider />
                         <MudCardContent Class="p-1">
                             <MudList Class="mx-auto mt-0 p-0">
@@ -231,5 +233,11 @@
 
             JS.InvokeVoidAsync("saveAsFile", $"{customer.Name}-nota-promissoria", Convert.ToBase64String(bytesBase64));
         }
+    }
+
+    private async Task DeleteCustomer(int? customerId)
+    {
+        await CustomerService.DeleteCustomer(customerId);
+        await OnInitializedAsync();
     }
 }
