@@ -211,7 +211,7 @@ namespace RafaStore.Server.Services.HospitalService
         {
             container.Row(row =>
             {
-                row.RelativeItem().PaddingTop(1).AlignRight().PaddingRight(5).Text($"Vencimento: {date:dd/MM/yyyy}");
+                row.RelativeItem().PaddingTop(1).AlignRight().PaddingRight(5).Text($"Vencimento: {date:dd/MM/yyyy}".ToUpper());
             });
         }
 
@@ -235,16 +235,16 @@ namespace RafaStore.Server.Services.HospitalService
             {
                 row.RelativeItem().AlignLeft().PaddingRight(0).Text(text =>
                 {
-                    text.Span("Ao(s)");
+                    text.Span("Ao(s)".ToUpper());
                     text.Span("   ");
-                    text.Span($"{pt.DateTimeFormat.GetDayName(date.DayOfWeek)}, {date.Day} de {pt.DateTimeFormat.GetMonthName(date.Month)} de {date.Year} pagarei por esta única via de nota promissória").FontSize(10).Underline();
-                    text.Span("  a  ");
-                    text.Span("BETTINARDI ROUPAS E ACESSORIOS LTDA").FontSize(10).Bold().Underline();
+                    text.Span($"{pt.DateTimeFormat.GetDayName(date.DayOfWeek)}, {date.Day} de {pt.DateTimeFormat.GetMonthName(date.Month)} de {date.Year} pagarei por esta única via de nota promissória".ToUpper()).FontSize(10).Underline();
+                    text.Span("  a  ".ToUpper());
+                    text.Span("BETTINARDI ROUPAS E ACESSORIOS LTDA".ToUpper()).FontSize(10).Bold().Underline();
                     text.Span("  CPF/CNPJ:  ");
                     text.Span($"33.761.757/0001-57").Underline();
-                    text.Span("  ou à sua ordem, a quantia de");
-                    text.Span($"  R$ {valorParcela} {HelperNumberToText.EscreverExtenso(valorParcela)}").FontSize(10).Bold();
-                    text.Span("  em moeda corrente, pagável em LONDRINA - PARANÁ").FontSize(10);
+                    text.Span("  ou à sua ordem, a quantia de".ToUpper());
+                    text.Span($"  R$ {valorParcela} {HelperNumberToText.EscreverExtenso(valorParcela)}".ToUpper()).FontSize(10).Bold();
+                    text.Span("  em moeda corrente, pagável em LONDRINA - PARANÁ".ToUpper()).FontSize(10);
                     text.AlignLeft();
                 });
             });
@@ -256,18 +256,18 @@ namespace RafaStore.Server.Services.HospitalService
             {
                 row.RelativeItem().PaddingTop(5).PaddingBottom(0).Text(text =>
                 {
-                    text.Line($"Data de emissão: {DateTime.Now:dd/MM/yyyy}").FontSize(10);
-                    text.Line($"Emitente: {customer.Name}").FontSize(10);
-                    text.Line($"CPF/CNPJ: {customer.CpfOrCnpj}").FontSize(10);
-                    text.Line($"Endereço: {customer.Address}").FontSize(10);
+                    text.Line($"Data de emissão: {DateTime.Now:dd/MM/yyyy}".ToUpper()).FontSize(10);
+                    text.Line($"Emitente: {customer.Name}".ToUpper()).FontSize(10);
+                    text.Line($"CPF/CNPJ: {customer.CpfOrCnpj}".ToUpper()).FontSize(10);
+                    text.Line($"Endereço: {customer.Address}".ToUpper()).FontSize(10);
                 });
                 row.ConstantItem(50);
                 row.RelativeItem().PaddingRight(5).PaddingBottom(0).Text(text =>
                 {
                     text.EmptyLine();
                     text.Line("                                                                                                  ").Underline();
-                    text.Line($"{customer.Name}").FontSize(10).Bold();
-                    text.Line($"{customer.CpfOrCnpj}").FontSize(10).Bold();
+                    text.Line($"{customer.Name}".ToUpper()).FontSize(10).Bold();
+                    text.Line($"{customer.CpfOrCnpj}".ToUpper()).FontSize(10).Bold();
                     text.AlignLeft();
                 });
             });
