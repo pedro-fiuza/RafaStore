@@ -211,7 +211,7 @@ namespace RafaStore.Server.Services.HospitalService
         {
             container.Row(row =>
             {
-                row.RelativeItem().PaddingTop(1).AlignRight().PaddingRight(5).Text($"Vencimento: {date:dd/MM/yyyy}".ToUpper());
+                row.RelativeItem().PaddingTop(1).AlignRight().PaddingRight(5).Text($"Vencimento: {date:dd/MM/yyyy}".ToUpper()).FontColor("#F00");
             });
         }
 
@@ -221,9 +221,9 @@ namespace RafaStore.Server.Services.HospitalService
             container.Row(row =>
             {
                 row.ConstantItem(250);
-                row.RelativeItem().Border(1).AlignCenter().Text($"  N {i + 1}" + "/" + $"{note.NumeroDeParcelas}  ");
+                row.RelativeItem().Border(1).AlignCenter().Text($"  N {i + 1}" + "/" + $"{note.NumeroDeParcelas}  ").FontColor("#F00");
                 row.ConstantItem(110);
-                row.RelativeItem().Border(1).AlignCenter().Text($"R$ {Math.Round((decimal)(note.ValorTotal / note.NumeroDeParcelas), 2)}");
+                row.RelativeItem().Border(1).AlignCenter().Text($"R$ {Math.Round((decimal)(note.ValorTotal / note.NumeroDeParcelas), 2)}").FontColor("#F00");
             });
         }
 
@@ -256,7 +256,7 @@ namespace RafaStore.Server.Services.HospitalService
             {
                 row.RelativeItem().PaddingTop(5).PaddingBottom(0).Text(text =>
                 {
-                    text.Line($"Data de emissão: {DateTime.Now:dd/MM/yyyy}".ToUpper()).FontSize(10);
+                    text.Line($"Data de emissão: {DateTime.Now:dd/MM/yyyy}".ToUpper()).FontSize(10).FontColor("#F00");
                     text.Line($"Emitente: {customer.Name}".ToUpper()).FontSize(10);
                     text.Line($"CPF/CNPJ: {customer.CpfOrCnpj}".ToUpper()).FontSize(10);
                     text.Line($"Endereço: {customer.Address}".ToUpper()).FontSize(10);
