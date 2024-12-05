@@ -17,7 +17,7 @@ namespace RafaStore.Server.Controllers
         {
             _customerService = customerService;
         }
-
+        //get
         [HttpGet]
         public async Task<IActionResult> Get(int page)
         {
